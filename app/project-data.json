@@ -1,0 +1,52 @@
+{
+  "projects": [
+    {
+      "name": "Customer Portal Refresh",
+      "owner": "Mona Patel",
+      "status": "On track",
+      "recentActivity": "Navigation prototype reviewed; accessibility fixes are underway.",
+      "priority": "High",
+      "summary": "Modernize the customer portal so account tasks are simpler to find and complete."
+    },
+    {
+      "name": "Mobile Checkout",
+      "owner": "Jordan Lee",
+      "status": "At risk",
+      "recentActivity": "Payment-provider sandbox credentials are still pending.",
+      "priority": "High",
+      "summary": "Reduce checkout friction on small screens and improve successful order completion."
+    },
+    {
+      "name": "Knowledge Base Migration",
+      "owner": "Priya Shah",
+      "status": "On track",
+      "recentActivity": "The support team finished reviewing the first 40 migrated articles.",
+      "priority": "Medium",
+      "summary": "Move help content to a searchable, maintainable home with clear ownership."
+    },
+    {
+      "name": "Usage Insights",
+      "owner": "Alex Rivera",
+      "status": "Blocked",
+      "recentActivity": "Waiting for data-platform access approval before validating the event schema.",
+      "priority": "Medium",
+      "summary": "Give teams a reliable view of product adoption and key customer journeys."
+    },
+    {
+      "name": "Design System Foundations",
+      "owner": "Casey Nguyen",
+      "status": "Complete",
+      "recentActivity": "Core color, spacing, and typography tokens were published for contributors.",
+      "priority": "Low",
+      "summary": "Establish reusable interface foundations that keep product experiences consistent."
+    },
+    {
+      "name": "Release Readiness",
+      "owner": "Sam Okafor",
+      "status": "On track",
+      "recentActivity": "The release checklist was updated after this week’s cross-team review.",
+      "priority": "Low",
+      "summary": "Coordinate launch checks and make release ownership visible across the team."
+    }
+  ]
+}

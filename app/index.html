@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fa">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="page-shell">
+        <p class="eyebrow">Team workspace</p>
+        <h1>Project Pulse</h1>
+        <p class="page-description">A clear view of what’s moving, what needs attention, and what comes next.</p>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section aria-labelledby="projects-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">At a glance</p>
+            <h2 id="projects-heading">Projects</h2>
+          </div>
+          <p id="project-count" class="project-count"></p>
+        </div>
+
+        <p id="dashboard-message" class="dashboard-message" role="status" aria-live="polite">Loading projects…</p>
+        <div id="dashboard" class="dashboard" aria-label="Project overview"></div>
+      </section>
+    </main>
+
+    <script>
+      const dashboard = document.querySelector("#dashboard");
+      const message = document.querySelector("#dashboard-message");
+      const projectCount = document.querySelector("#project-count");
+
+      const createText = (tag, className, text) => {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        element.textContent = text;
+        return element;
+      };
+
+      const categoryClass = (value) => {
+        const normalized = value.trim().toLowerCase().replace(/\s+/g, "-");
+        const supported = ["on-track", "at-risk", "blocked", "complete", "low", "medium", "high"];
+        return supported.includes(normalized) ? normalized : "neutral";
+      };
+
+      const makeCard = (project) => {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        card.append(createText("h2", "project-name", project.name));
+        card.append(createText("p", "project-owner", `Owner: ${project.owner}`));
+
+        const badges = document.createElement("ul");
+        badges.className = "project-badges";
+        badges.setAttribute("aria-label", "Status and priority");
+        for (const [label, value] of [["Status", project.status], ["Priority", project.priority]]) {
+          const badgeItem = document.createElement("li");
+          const badge = createText("span", `badge badge--${categoryClass(value)}`, "");
+          badge.append(createText("span", "badge-label", `${label}: `));
+          badge.append(document.createTextNode(value));
+          badgeItem.append(badge);
+          badges.append(badgeItem);
+        }
+        card.append(badges);
+
+        card.append(createText("p", "project-summary", project.summary));
+
+        const activity = document.createElement("div");
+        activity.className = "project-activity";
+        activity.append(createText("h4", "activity-label", "Recent activity"));
+        activity.append(createText("p", "activity-value", project.recentActivity));
+        card.append(activity);
+
+        return card;
+      };
+
+      const showError = () => {
+        message.replaceChildren(
+          document.createTextNode("Projects couldn’t be loaded. Check your connection and try again. ")
+        );
+        const retry = createText("button", "retry-button", "Try again");
+        retry.type = "button";
+        retry.addEventListener("click", loadProjects);
+        message.append(retry);
+        message.className = "dashboard-message dashboard-message--error";
+      };
+
+      async function loadProjects() {
+        dashboard.replaceChildren();
+        projectCount.textContent = "";
+        message.className = "dashboard-message";
+        message.textContent = "Loading projects…";
+
+        try {
+          const response = await fetch("project-data.json");
+          if (!response.ok) throw new Error(`Project data request failed: ${response.status}`);
+          const data = await response.json();
+          if (!data || !Array.isArray(data.projects)) throw new Error("Project data has no projects array");
+
+          if (data.projects.length === 0) {
+            message.textContent = "No projects to show yet.";
+            message.className = "dashboard-message dashboard-message--empty";
+            return;
+          }
+
+          const cards = document.createDocumentFragment();
+          for (const project of data.projects) {
+            if (!project || ["name", "owner", "status", "recentActivity", "priority", "summary"]
+              .some((field) => typeof project[field] !== "string")) {
+              throw new Error("A project is missing a required text field");
+            }
+            cards.append(makeCard(project));
+          }
+          dashboard.append(cards);
+          message.textContent = "";
+          projectCount.textContent = `${data.projects.length} ${data.projects.length === 1 ? "project" : "projects"}`;
+        } catch {
+          showError();
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>
